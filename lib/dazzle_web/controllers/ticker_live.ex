@@ -1,5 +1,6 @@
 defmodule DazzleWeb.TickerLive do
   use DazzleWeb, :live_view
+  @rotation_factor 10
 
   @impl true
   def render(assigns) do
@@ -93,7 +94,7 @@ defmodule DazzleWeb.TickerLive do
     """
     background-color: rgba(0, 0, 0, #{opacity(count)});
     color: #{text_color_string(count)};
-    transform: rotate(#{count}deg);
+    transform: rotate(#{count * @rotation_factor}deg);
     transition-duration: 250ms;
     transition-timing-function: linear;
     """
