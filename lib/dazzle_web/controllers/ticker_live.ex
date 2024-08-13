@@ -20,7 +20,6 @@ defmodule DazzleWeb.TickerLive do
     end
 
     {:ok, assign(socket, count: 0)}
-    {:ok, assign(socket, count: 14)}
   end
 
   @impl true
