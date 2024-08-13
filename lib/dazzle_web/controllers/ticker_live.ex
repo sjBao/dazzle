@@ -5,7 +5,10 @@ defmodule DazzleWeb.TickerLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="grid grid-cols-3 mb-10">
+    <div
+      class="grid grid-cols-3 mb-10"
+      phx-window-keydown="keydown"
+    >
       <.arrow_link direction="decrement" />
       <span class="text-center">
         Dazzle Count: <%= @count %>
@@ -39,13 +42,38 @@ defmodule DazzleWeb.TickerLive do
     {:noreply, dec(socket)}
   end
 
+  @impl true
+  def handle_event("keydown", %{"key" => "ArrowRight"}, socket) do
+    {:noreply, inc(socket)}
+  end
+
+  @impl true
+  def handle_event("keydown", %{"key" => "ArrowUp"}, socket) do
+    {:noreply, inc(socket)}
+  end
+
+  @impl true
+  def handle_event("keydown", %{"key" => "ArrowLeft"}, socket) do
+    {:noreply, dec(socket)}
+  end
+
+  @impl true
+  def handle_event("keydown", %{"key" => "ArrowDown"}, socket) do
+    {:noreply, dec(socket)}
+  end
+
+  @impl true
+  def handle_event("keydown", _, socket), do: {:noreply, socket}
+
   defp inc(socket) do
-    assign(socket, count: socket.assigns.count + 1)
+    assign(socket, count: wrap(socket.assigns.count + 1))
   end
 
   defp dec(socket) do
-    assign(socket, count: socket.assigns.count - 1)
+    assign(socket, count: wrap(socket.assigns.count - 1))
   end
+
+  defp wrap(count), do: rem(count, 360)
 
   attr :count, :integer
   attr :message, :string
