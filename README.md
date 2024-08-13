@@ -1,18 +1,12 @@
-# Dazzle
+# Programmer Passport - Phoenix LiveView
+- By: [Bruce Tate](https://grox.io/about)
 
-To start your Phoenix server:
+These are my notes and code from [Pragmatic Bookshelf](https://pragprog.com/titles/passlive/programmer-passport-liveview/). This is just a repository to keep track of my progress and notes. As such, it may be incomplete or incorrect.
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+## Versions
+If using asdf, you can use the `.tool-versions` file to install the correct versions of Elixir and Erlang.
+- elixir 1.15.5-otp-26
+- erlang 26.0.2
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+## Notes
+- [Chapter 1: Introduction](./notes/chapter-1.md)
