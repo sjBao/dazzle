@@ -5,7 +5,13 @@ defmodule DazzleWeb.TickerLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <h1>Dazzle Count: <%= @count %></h1>
+    <div class="grid grid-cols-3 mb-10">
+      <.arrow_link direction="increment" />
+      <span class="text-center">
+        Dazzle Count: <%= @count %>
+      </span>
+      <.arrow_link direction="decrement" />
+    </div>
     <div class="grid grid-cols-2 gap-4">
       <.rotate count={@count} message="Hello there" />
       <.scroll count={@count} message="Hello there" />
@@ -15,10 +21,6 @@ defmodule DazzleWeb.TickerLive do
 
   @impl true
   def mount(_, _, socket) do
-    if connected?(socket) do
-      :timer.send_interval(250, self(), :tick)
-    end
-
     {:ok, assign(socket, count: 0)}
   end
 
@@ -56,6 +58,21 @@ defmodule DazzleWeb.TickerLive do
     </div>
     """
   end
+
+  defp arrow_link(assigns) do
+    ~H"""
+    <span
+      class="cursor-pointer hover:border-gray-500 border rounded-md flex items-center justify-center"
+      phx-click="change"
+      phx-value-direction={@direction}
+    >
+      <%= unicode(@direction) %>
+    </span>
+    """
+  end
+
+  defp unicode("increment"), do: "🔼"
+  defp unicode("decrement"), do: "🔽"
 
   defp scrolled(string, count) do
     len = String.length(string)
