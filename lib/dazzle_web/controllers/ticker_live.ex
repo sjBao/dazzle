@@ -6,11 +6,11 @@ defmodule DazzleWeb.TickerLive do
   def render(assigns) do
     ~H"""
     <div class="grid grid-cols-3 mb-10">
-      <.arrow_link direction="increment" />
+      <.arrow_link direction="decrement" />
       <span class="text-center">
         Dazzle Count: <%= @count %>
       </span>
-      <.arrow_link direction="decrement" />
+      <.arrow_link direction="increment" />
     </div>
     <div class="grid grid-cols-2 gap-4">
       <.rotate count={@count} message="Hello there" />
@@ -29,8 +29,22 @@ defmodule DazzleWeb.TickerLive do
     {:noreply, inc(socket)}
   end
 
+  @impl true
+  def handle_event("change", %{"direction" => "increment"}, socket) do
+    {:noreply, inc(socket)}
+  end
+
+  @impl true
+  def handle_event("change", %{"direction" => "decrement"}, socket) do
+    {:noreply, dec(socket)}
+  end
+
   defp inc(socket) do
     assign(socket, count: socket.assigns.count + 1)
+  end
+
+  defp dec(socket) do
+    assign(socket, count: socket.assigns.count - 1)
   end
 
   attr :count, :integer
@@ -62,17 +76,17 @@ defmodule DazzleWeb.TickerLive do
   defp arrow_link(assigns) do
     ~H"""
     <span
-      class="cursor-pointer hover:border-gray-500 border rounded-md flex items-center justify-center"
+      class="cursor-pointer hover:border-gray-500 border rounded-md flex items-center justify-center z-50 bg-white"
       phx-click="change"
       phx-value-direction={@direction}
     >
-      <%= unicode(@direction) %>
+      &#<%= unicode(@direction) %>;
     </span>
     """
   end
 
-  defp unicode("increment"), do: "🔼"
-  defp unicode("decrement"), do: "🔽"
+  defp unicode("increment"), do: 9658
+  defp unicode("decrement"), do: 9664
 
   defp scrolled(string, count) do
     len = String.length(string)
@@ -86,7 +100,7 @@ defmodule DazzleWeb.TickerLive do
   defp opacity(count) do
     case rem(count, 20) do
       0 -> 1.0
-      n when n <= 10 -> 1 - n /10
+      n when n <= 10 -> 1 - n / 10
       n -> (n - 10) / 10
     end
   end
