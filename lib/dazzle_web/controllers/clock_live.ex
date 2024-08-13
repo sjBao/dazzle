@@ -26,14 +26,20 @@ defmodule DazzleWeb.ClockLive do
   end
 
   defp clock(assigns) do
-    assigns = assign(assigns, hour: get_hour(assigns))
+    assigns =
+      assign(assigns,
+        hour: get_hour(assigns),
+        minute: get_minute(assigns),
+        second: get_second(assigns)
+      )
 
     ~H"""
     <div class="border-8 border-zinc-600 border-double rounded-full relative w-96 h-96 shadow-inner shadow-zinc-400">
       <.hour_hand hour={@hour} />
-      <.minute_hand minute={get_minute(assigns)} />
-      <.second_hand second={get_second(assigns)} />
+      <.minute_hand minute={@minute} />
+      <.second_hand second={@second} />
       <.reference_marks />
+      <.time_display hour={@hour} minute={@minute} second={@second} />
     </div>
     """
   end
@@ -123,5 +129,19 @@ defmodule DazzleWeb.ClockLive do
       <div class="absolute p-1 border-4 border-double rounded-lg bg-zinc-600 shadow-sm" />
     </div>
     """
+  end
+
+  defp time_display(assigns) do
+    ~H"""
+    <div class="absolute bottom-1/3 right-1/2 translate-x-1/2">
+      <div class="px-2 py-1 font-mono text-zinc-600 text-xl">
+        <%= "#{pad_with_zero(@hour)}:#{pad_with_zero(@minute)}:#{pad_with_zero(@second)}" %>
+      </div>
+    </div>
+    """
+  end
+
+  defp pad_with_zero(time) do
+    time |> Integer.to_string() |> String.pad_leading(2, "0")
   end
 end
