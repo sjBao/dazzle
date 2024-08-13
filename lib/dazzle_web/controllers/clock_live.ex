@@ -29,7 +29,7 @@ defmodule DazzleWeb.ClockLive do
     assigns = assign(assigns, hour: get_hour(assigns))
 
     ~H"""
-    <div class="border-8 border-zinc-600 border-double rounded-full relative w-96 h-96">
+    <div class="border-8 border-zinc-600 border-double rounded-full relative w-96 h-96 shadow-inner shadow-zinc-400">
       <.hour_hand hour={@hour} />
       <.minute_hand minute={get_minute(assigns)} />
       <.second_hand second={get_second(assigns)} />
@@ -116,10 +116,11 @@ defmodule DazzleWeb.ClockLive do
   defp reference_marks(assigns) do
     ~H"""
     <div class="absolute w-full h-full flex justify-center items-center">
-      <div class="absolute px-2 py-1 text-xl top-0">12</div>
-      <div class="absolute px-2 py-1 text-xl right-0">3</div>
-      <div class="absolute px-2 py-1 text-xl bottom-0">6</div>
-      <div class="absolute px-2 py-1 text-xl left-0">9</div>
+      <div class="absolute px-2 py-1 font-serif font-bold text-zinc-600 text-2xl top-0">12</div>
+      <div class="absolute px-2 py-1 font-serif font-bold text-zinc-600 text-2xl right-0">3</div>
+      <div class="absolute px-2 py-1 font-serif font-bold text-zinc-600 text-2xl bottom-0">6</div>
+      <div class="absolute px-2 py-1 font-serif font-bold text-zinc-600 text-2xl left-0">9</div>
+      <div class="absolute p-1 border-4 border-double rounded-lg bg-zinc-600 shadow-sm" />
     </div>
     """
   end

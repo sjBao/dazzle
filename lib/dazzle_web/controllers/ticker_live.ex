@@ -31,10 +31,6 @@ defmodule DazzleWeb.TickerLive do
     assign(socket, count: socket.assigns.count + 1)
   end
 
-  defp dec(socket) do
-    assign(socket, count: socket.assigns.count - 1)
-  end
-
   attr :count, :integer
   attr :message, :string
 
