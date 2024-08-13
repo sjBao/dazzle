@@ -65,7 +65,7 @@ defmodule DazzleWeb.ClockLive do
   defp hour_hand(assigns) do
     ~H"""
     <div
-      class="absolute w-full h-full flex justify-center items-center"
+      class="absolute w-full h-full flex justify-center items-center z-50"
       style={hour_hand_style(@hour)}
     >
       <div class="w-1/2 h-1/2 flex justify-center items-start">
@@ -78,7 +78,7 @@ defmodule DazzleWeb.ClockLive do
   defp minute_hand(assigns) do
     ~H"""
     <div
-      class="absolute w-full h-full flex justify-center items-center"
+      class="absolute w-full h-full flex justify-center items-center z-50"
       style={minute_hand_style(@minute)}
     >
       <div class="w-3/4 h-3/4 flex justify-center items-start">
@@ -91,7 +91,7 @@ defmodule DazzleWeb.ClockLive do
   defp second_hand(assigns) do
     ~H"""
     <div
-      class="absolute w-full h-full flex justify-center items-center"
+      class="absolute w-full h-full flex justify-center items-center z-50"
       style={second_hand_style(@second)}
     >
       <div class="w-5/6 h-5/6 flex justify-center items-start">
@@ -134,7 +134,7 @@ defmodule DazzleWeb.ClockLive do
   defp time_display(assigns) do
     ~H"""
     <div class="absolute bottom-1/3 right-1/2 translate-x-1/2">
-      <div class="px-2 py-1 font-mono text-zinc-600 text-xl">
+      <div class="px-2 py-1 font-mono text-zinc-600 text-xl shadow-inner rounded-md border border-zinc-200">
         <%= "#{pad_with_zero(@hour)}:#{pad_with_zero(@minute)}:#{pad_with_zero(@second)}" %>
       </div>
     </div>
