@@ -23,6 +23,10 @@ defmodule DazzleWeb.Router do
 
     live "/users", UserLive.Index, :index
     live "/users/new", UserLive.Index, :new
+    live "/users/:id/edit", UserLive.Index, :edit
+    live "/users/:id", UserLive.Show, :show
+    live "/users/:id/show/edit", UserLive.Show, :edit
+
 
   end
 
