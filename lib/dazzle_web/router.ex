@@ -20,6 +20,7 @@ defmodule DazzleWeb.Router do
     get "/", PageController, :home
     live "/ticker", TickerLive, :index
     live "/clock", ClockLive, :index
+    live "/users", UserLive.Index, :index
   end
 
   # Other scopes may use custom stacks.
