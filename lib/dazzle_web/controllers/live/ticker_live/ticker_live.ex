@@ -5,7 +5,16 @@ defmodule DazzleWeb.TickerLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <h1>Dazzle Count: <%= @count %></h1>
+    <div
+      class="grid grid-cols-3 mb-10"
+      phx-window-keydown="keydown"
+    >
+      <.arrow_link direction="decrement" />
+      <span class="text-center">
+        Dazzle Count: <%= @count %>
+      </span>
+      <.arrow_link direction="increment" />
+    </div>
     <div class="grid grid-cols-2 gap-4">
       <.rotate count={@count} message="Hello there" />
       <.scroll count={@count} message="Hello there" />
@@ -15,10 +24,6 @@ defmodule DazzleWeb.TickerLive do
 
   @impl true
   def mount(_, _, socket) do
-    if connected?(socket) do
-      :timer.send_interval(250, self(), :tick)
-    end
-
     {:ok, assign(socket, count: 0)}
   end
 
@@ -27,9 +32,48 @@ defmodule DazzleWeb.TickerLive do
     {:noreply, inc(socket)}
   end
 
-  defp inc(socket) do
-    assign(socket, count: socket.assigns.count + 1)
+  @impl true
+  def handle_event("change", %{"direction" => "increment"}, socket) do
+    {:noreply, inc(socket)}
   end
+
+  @impl true
+  def handle_event("change", %{"direction" => "decrement"}, socket) do
+    {:noreply, dec(socket)}
+  end
+
+  @impl true
+  def handle_event("keydown", %{"key" => "ArrowRight"}, socket) do
+    {:noreply, inc(socket)}
+  end
+
+  @impl true
+  def handle_event("keydown", %{"key" => "ArrowUp"}, socket) do
+    {:noreply, inc(socket)}
+  end
+
+  @impl true
+  def handle_event("keydown", %{"key" => "ArrowLeft"}, socket) do
+    {:noreply, dec(socket)}
+  end
+
+  @impl true
+  def handle_event("keydown", %{"key" => "ArrowDown"}, socket) do
+    {:noreply, dec(socket)}
+  end
+
+  @impl true
+  def handle_event("keydown", _, socket), do: {:noreply, socket}
+
+  defp inc(socket) do
+    assign(socket, count: wrap(socket.assigns.count + 1))
+  end
+
+  defp dec(socket) do
+    assign(socket, count: wrap(socket.assigns.count - 1))
+  end
+
+  defp wrap(count), do: rem(count, 360)
 
   attr :count, :integer
   attr :message, :string
@@ -57,6 +101,21 @@ defmodule DazzleWeb.TickerLive do
     """
   end
 
+  defp arrow_link(assigns) do
+    ~H"""
+    <span
+      class="cursor-pointer hover:border-gray-500 border rounded-md flex items-center justify-center z-50 bg-white"
+      phx-click="change"
+      phx-value-direction={@direction}
+    >
+      &#<%= unicode(@direction) %>;
+    </span>
+    """
+  end
+
+  defp unicode("increment"), do: 9658
+  defp unicode("decrement"), do: 9664
+
   defp scrolled(string, count) do
     len = String.length(string)
     count = rem(count, len * 2)
@@ -69,7 +128,7 @@ defmodule DazzleWeb.TickerLive do
   defp opacity(count) do
     case rem(count, 20) do
       0 -> 1.0
-      n when n <= 10 -> 1 - n /10
+      n when n <= 10 -> 1 - n / 10
       n -> (n - 10) / 10
     end
   end
