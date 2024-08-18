@@ -36,11 +36,12 @@ defmodule DazzleWeb.TickerLive do
   def mount(_, _, socket) do
     count = 0
     message = "Dazzle"
+
     changeset =
       FormData.new(message, count)
       |> FormData.change(%{})
 
-    {:ok, assign(socket, count: count, changeset: changeset)}
+    {:ok, assign(socket, count: count, changeset: changeset, message: message)}
   end
 
   @impl true
@@ -82,8 +83,20 @@ defmodule DazzleWeb.TickerLive do
   def handle_event("keydown", _, socket), do: {:noreply, socket}
 
   @impl true
-  def handle_event("validate", unsigned_params, socket) do
-    DazzleWeb.Live.TickerLive.FormData.change(socket.assigns.changeset, unsigned_params)
+  def handle_event("validate", %{"form" => unsigned_params}, socket) do
+    validate(socket, unsigned_params)
+
+    {:noreply, validate(socket, unsigned_params)}
+  end
+
+  defp validate(socket, params) do
+    IO.inspect("******* validate event")
+    IO.inspect(socket)
+    changeset =
+      FormData.new(socket.assigns.message, socket.assigns.count)
+      |> FormData.change(params)
+
+    assign(socket, changeset: changeset)
   end
 
   defp inc(socket) do
