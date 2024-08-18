@@ -1,14 +1,12 @@
 defmodule DazzleWeb.TickerLive do
+  alias DazzleWeb.Live.TickerLive.FormData
   use DazzleWeb, :live_view
   @rotation_factor 10
 
   @impl true
   def render(assigns) do
     ~H"""
-    <div
-      class="grid grid-cols-3 mb-10"
-      phx-window-keydown="keydown"
-    >
+    <div class="grid grid-cols-3 mb-10" phx-window-keydown="keydown">
       <.arrow_link direction="decrement" />
       <span class="text-center">
         Dazzle Count: <%= @count %>
@@ -19,12 +17,30 @@ defmodule DazzleWeb.TickerLive do
       <.rotate count={@count} message="Hello there" />
       <.scroll count={@count} message="Hello there" />
     </div>
+    <div class="grid" />
+    <.simple_form
+      :let={f}
+      for={@changeset}
+      id="user-form"
+      phx-change="validate"
+      phx-submit="save"
+      as={:form}
+    >
+      <.input field={f[:message]} type="text" label="Message" />
+      <.input field={f[:count]} type="number" label="Count" />
+    </.simple_form>
     """
   end
 
   @impl true
   def mount(_, _, socket) do
-    {:ok, assign(socket, count: 0)}
+    count = 0
+    message = "Dazzle"
+    changeset =
+      FormData.new(message, count)
+      |> FormData.change(%{})
+
+    {:ok, assign(socket, count: count, changeset: changeset)}
   end
 
   @impl true
@@ -64,6 +80,11 @@ defmodule DazzleWeb.TickerLive do
 
   @impl true
   def handle_event("keydown", _, socket), do: {:noreply, socket}
+
+  @impl true
+  def handle_event("validate", unsigned_params, socket) do
+    DazzleWeb.Live.TickerLive.FormData.change(socket.assigns.changeset, unsigned_params)
+  end
 
   defp inc(socket) do
     assign(socket, count: wrap(socket.assigns.count + 1))
