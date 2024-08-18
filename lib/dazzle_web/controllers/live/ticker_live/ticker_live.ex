@@ -14,8 +14,8 @@ defmodule DazzleWeb.TickerLive do
       <.arrow_link direction="increment" />
     </div>
     <div class="grid grid-cols-2 gap-4">
-      <.rotate count={@count} message="Hello there" />
-      <.scroll count={@count} message="Hello there" />
+      <.rotate count={@count} message={@message} />
+      <.scroll count={@count} message={@message} />
     </div>
     <div class="grid" />
     <.simple_form
@@ -26,7 +26,7 @@ defmodule DazzleWeb.TickerLive do
       phx-submit="save"
       as={:form}
     >
-      <.input field={f[:message]} type="text" label="Message" />
+      <.input field={f[:message]} phx-blur="message_blur" type="text" label="Message" />
       <.input field={f[:count]} type="number" label="Count" />
       <.button type="submit">Save</.button>
     </.simple_form>
@@ -95,6 +95,11 @@ defmodule DazzleWeb.TickerLive do
     {:noreply, save(socket, params)}
   end
 
+  @impl true
+  def handle_event("message_blur", %{ "value" => value}, socket) do
+    {:noreply, save(socket, %{"message" => value})}
+  end
+
   defp save(socket, params) do
     changeset =
       FormData.new(socket.assigns.message, socket.assigns.count)
@@ -104,7 +109,6 @@ defmodule DazzleWeb.TickerLive do
   end
 
   defp apply_changes(socket, %{changes: changes, valid?: true}) do
-
     assign(socket, Map.to_list(changes))
   end
 
