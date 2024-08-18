@@ -91,21 +91,20 @@ defmodule DazzleWeb.TickerLive do
   end
 
   @impl true
-  def handle_event("save", %{ "form" => params }, socket) do
-
+  def handle_event("save", %{"form" => params}, socket) do
     {:noreply, save(socket, params)}
   end
 
   defp save(socket, params) do
-    changeset = FormData.new(socket.assigns.message, socket.assigns.count)
-    |> FormData.change(params)
+    changeset =
+      FormData.new(socket.assigns.message, socket.assigns.count)
+      |> FormData.change(params)
 
     apply_changes(socket, changeset)
   end
 
   defp apply_changes(socket, %{changes: changes, valid?: true}) do
-    IO.inspect("********** apply_changes **********")
-    IO.inspect(changes)
+
     assign(socket, Map.to_list(changes))
   end
 
@@ -122,14 +121,20 @@ defmodule DazzleWeb.TickerLive do
   end
 
   defp inc(socket) do
-    assign(socket, count: wrap(socket.assigns.count + 1))
+    new_count = wrap(socket.assigns.count + 1)
+
+    assign(socket, count: new_count)
+    |> validate(%{"count" => new_count})
   end
 
   defp dec(socket) do
-    assign(socket, count: wrap(socket.assigns.count - 1))
+    new_count = wrap(socket.assigns.count - 1)
+
+    assign(socket, count: new_count)
+    |> validate(%{"count" => new_count})
   end
 
-  defp wrap(count), do: rem(count, 360)
+  defp wrap(count), do: 0 |> max(count) |> rem(360)
 
   attr :count, :integer
   attr :message, :string
