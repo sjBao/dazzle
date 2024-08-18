@@ -28,6 +28,7 @@ defmodule DazzleWeb.TickerLive do
     >
       <.input field={f[:message]} type="text" label="Message" />
       <.input field={f[:count]} type="number" label="Count" />
+      <.button type="submit">Save</.button>
     </.simple_form>
     """
   end
@@ -89,9 +90,30 @@ defmodule DazzleWeb.TickerLive do
     {:noreply, validate(socket, unsigned_params)}
   end
 
+  @impl true
+  def handle_event("save", %{ "form" => params }, socket) do
+
+    {:noreply, save(socket, params)}
+  end
+
+  defp save(socket, params) do
+    changeset = FormData.new(socket.assigns.message, socket.assigns.count)
+    |> FormData.change(params)
+
+    apply_changes(socket, changeset)
+  end
+
+  defp apply_changes(socket, %{changes: changes, valid?: true}) do
+    IO.inspect("********** apply_changes **********")
+    IO.inspect(changes)
+    assign(socket, Map.to_list(changes))
+  end
+
+  defp apply_changes(socket, %{valid?: false}) do
+    socket
+  end
+
   defp validate(socket, params) do
-    IO.inspect("******* validate event")
-    IO.inspect(socket)
     changeset =
       FormData.new(socket.assigns.message, socket.assigns.count)
       |> FormData.change(params)
