@@ -27,7 +27,7 @@ defmodule DazzleWeb.TickerLive do
       as={:form}
     >
       <.input field={f[:message]} phx-blur="message_blur" type="text" label="Message" />
-      <.input field={f[:count]} type="number" label="Count" />
+      <.input field={f[:count]} type="number" label="Count" min={0} />
       <.button type="submit">Save</.button>
     </.simple_form>
     """
@@ -118,7 +118,7 @@ defmodule DazzleWeb.TickerLive do
 
   defp validate(socket, params) do
     changeset =
-      FormData.new(socket.assigns.message, socket.assigns.count)
+      FormData.new(socket.assigns.message, max(socket.assigns.count, 0))
       |> FormData.change(params)
 
     assign(socket, changeset: changeset)
