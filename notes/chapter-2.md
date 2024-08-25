@@ -22,3 +22,15 @@ Each `handle_event` function is just a function is essentially a reducer that ta
 ### `render`
 Only returns the difference between this render and the last one.
 
+
+### Events we used in this chapter:
+- `phx-change`, `phx-submit`, `phx-window-keydown`
+
+
+### Additional hooks we didn't use:
+- `phx-focus`, `phx-blur`
+- `phx-debounce`, `phx-throttle`
+- DOM patching: changing a single element on the page - `phx-update`
+- JavaScript Hooks: calling js functions directly - `phx-hook`
+
+
