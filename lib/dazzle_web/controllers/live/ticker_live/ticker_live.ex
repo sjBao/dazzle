@@ -1,14 +1,12 @@
 defmodule DazzleWeb.TickerLive do
+  alias DazzleWeb.Live.TickerLive.FormData
   use DazzleWeb, :live_view
   @rotation_factor 10
 
   @impl true
   def render(assigns) do
     ~H"""
-    <div
-      class="grid grid-cols-3 mb-10"
-      phx-window-keydown="keydown"
-    >
+    <div class="grid grid-cols-3 mb-10" phx-window-keydown="keydown">
       <.arrow_link direction="decrement" />
       <span class="text-center">
         Dazzle Count: <%= @count %>
@@ -16,15 +14,35 @@ defmodule DazzleWeb.TickerLive do
       <.arrow_link direction="increment" />
     </div>
     <div class="grid grid-cols-2 gap-4">
-      <.rotate count={@count} message="Hello there" />
-      <.scroll count={@count} message="Hello there" />
+      <.rotate count={@count} message={@message} />
+      <.scroll count={@count} message={@message} />
     </div>
+    <div class="grid" />
+    <.simple_form
+      :let={f}
+      for={@changeset}
+      id="user-form"
+      phx-change="validate"
+      phx-submit="save"
+      as={:form}
+    >
+      <.input field={f[:message]} phx-blur="message_blur" type="text" label="Message" />
+      <.input field={f[:count]} type="number" label="Count" min={0} />
+      <.button type="submit">Save</.button>
+    </.simple_form>
     """
   end
 
   @impl true
   def mount(_, _, socket) do
-    {:ok, assign(socket, count: 0)}
+    count = 0
+    message = "Dazzle"
+
+    changeset =
+      FormData.new(message, count)
+      |> FormData.change(%{})
+
+    {:ok, assign(socket, count: count, changeset: changeset, message: message)}
   end
 
   @impl true
@@ -65,15 +83,62 @@ defmodule DazzleWeb.TickerLive do
   @impl true
   def handle_event("keydown", _, socket), do: {:noreply, socket}
 
+  @impl true
+  def handle_event("validate", %{"form" => unsigned_params}, socket) do
+    validate(socket, unsigned_params)
+
+    {:noreply, validate(socket, unsigned_params)}
+  end
+
+  @impl true
+  def handle_event("save", %{"form" => params}, socket) do
+    {:noreply, save(socket, params)}
+  end
+
+  @impl true
+  def handle_event("message_blur", %{ "value" => value}, socket) do
+    {:noreply, save(socket, %{"message" => value})}
+  end
+
+  defp save(socket, params) do
+    changeset =
+      FormData.new(socket.assigns.message, socket.assigns.count)
+      |> FormData.change(params)
+
+    apply_changes(socket, changeset)
+  end
+
+  defp apply_changes(socket, %{changes: changes, valid?: true}) do
+    assign(socket, Map.to_list(changes))
+  end
+
+  defp apply_changes(socket, %{valid?: false}) do
+    socket
+  end
+
+  defp validate(socket, params) do
+    changeset =
+      FormData.new(socket.assigns.message, max(socket.assigns.count, 0))
+      |> FormData.change(params)
+
+    assign(socket, changeset: changeset)
+  end
+
   defp inc(socket) do
-    assign(socket, count: wrap(socket.assigns.count + 1))
+    new_count = wrap(socket.assigns.count + 1)
+
+    assign(socket, count: new_count)
+    |> validate(%{"count" => new_count})
   end
 
   defp dec(socket) do
-    assign(socket, count: wrap(socket.assigns.count - 1))
+    new_count = wrap(socket.assigns.count - 1)
+
+    assign(socket, count: new_count)
+    |> validate(%{"count" => new_count})
   end
 
-  defp wrap(count), do: rem(count, 360)
+  defp wrap(count), do: 0 |> max(count) |> rem(360)
 
   attr :count, :integer
   attr :message, :string
