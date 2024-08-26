@@ -13,6 +13,25 @@ defmodule DazzleWeb.TickerLive do
       </span>
       <.arrow_link direction="increment" />
     </div>
+    <div class="grid grid-cols-1 mb-10">
+    <.simple_form
+      :let={f}
+      for={@changeset}
+      id="count-form"
+      phx-change="validate"
+      as={:form}
+     >
+      <.input
+        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+        max="360"
+        min="0"
+        type="range"
+        field={f[:count]}
+        phx-change="change"
+        phx-debounce="300"
+      />
+    </.simple_form>
+    </div>
     <div class="grid grid-cols-2 gap-4">
       <.rotate count={@count} message={@message} />
       <.scroll count={@count} message={@message} />
@@ -61,6 +80,11 @@ defmodule DazzleWeb.TickerLive do
   end
 
   @impl true
+  def handle_event("change", %{"form" => form_params}, socket) do
+    {:noreply, assign(socket, count: wrap(form_params["count"] |> String.to_integer()))}
+  end
+
+  @impl true
   def handle_event("keydown", %{"key" => "ArrowRight"}, socket) do
     {:noreply, inc(socket)}
   end
@@ -96,7 +120,7 @@ defmodule DazzleWeb.TickerLive do
   end
 
   @impl true
-  def handle_event("message_blur", %{ "value" => value}, socket) do
+  def handle_event("message_blur", %{"value" => value}, socket) do
     {:noreply, save(socket, %{"message" => value})}
   end
 
@@ -138,7 +162,7 @@ defmodule DazzleWeb.TickerLive do
     |> validate(%{"count" => new_count})
   end
 
-  defp wrap(count), do: 0 |> max(count) |> rem(360)
+  defp wrap(count), do: 0 |> max(count) |> rem(361)
 
   attr :count, :integer
   attr :message, :string
