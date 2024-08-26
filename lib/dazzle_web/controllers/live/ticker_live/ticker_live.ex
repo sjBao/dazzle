@@ -81,7 +81,7 @@ defmodule DazzleWeb.TickerLive do
 
   @impl true
   def handle_event("change", %{"form" => form_params}, socket) do
-    {:noreply, assign(socket, count: wrap(form_params["count"] |> String.to_integer()))}
+    {:noreply, apply_slider(socket, form_params)}
   end
 
   @impl true
@@ -163,6 +163,14 @@ defmodule DazzleWeb.TickerLive do
   end
 
   defp wrap(count), do: 0 |> max(count) |> rem(361)
+
+  defp apply_slider(socket, form_params) do
+    new_count = form_params["count"] |> String.to_integer() |> wrap()
+
+    socket
+    |> assign(count: wrap(new_count))
+    |> validate(%{"count" => wrap(new_count)})
+  end
 
   attr :count, :integer
   attr :message, :string
